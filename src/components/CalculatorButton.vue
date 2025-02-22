@@ -1,6 +1,18 @@
-<script setup></script>
+<script setup>
+const props = defineProps({
+  name: {
+    type: String,
+  },
+  handleButton: {
+    type: Function,
+  },
+})
+const handleClick = () => {
+  props.handleButton(props.name)
+}
+</script>
 <template>
-  <button>
+  <button @click="handleClick">
     <slot></slot>
   </button>
 </template>

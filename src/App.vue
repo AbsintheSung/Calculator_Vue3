@@ -1,7 +1,47 @@
-<script setup></script>
+<script setup>
+import CalculatorButton from '@/components/CalculatorButton.vue'
+const numberData = [7, 8, 9, 4, 5, 6, 1, 2, 3, 0]
+const operatorData = ['/', '*', '-', '+']
+const actionData = [
+  { name: 'Reset', style: 'reset' },
+  { name: 'Del', style: 'del' },
+]
+</script>
 
 <template>
-  <div></div>
+  <div class="container">
+    <div class="calculator">
+      <div class="output-view">
+        <p class="output-text"></p>
+        <span class="operator-view">+</span>
+      </div>
+      <div class="buttons">
+        <div>
+          <div class="action">
+            <CalculatorButton v-for="item in actionData" :key="item.name" :class="item.style">
+              {{ item.name }}
+            </CalculatorButton>
+          </div>
+          <div class="numbers">
+            <template v-for="item in numberData" :key="item">
+              <CalculatorButton v-if="item === 0" class="number zero-number">
+                {{ item }}
+              </CalculatorButton>
+              <CalculatorButton v-else class="number">
+                {{ item }}
+              </CalculatorButton>
+            </template>
+          </div>
+        </div>
+        <div class="operators">
+          <CalculatorButton v-for="item in operatorData" :key="item" class="operator">
+            {{ item }}
+          </CalculatorButton>
+          <CalculatorButton class="equal">=</CalculatorButton>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped></style>

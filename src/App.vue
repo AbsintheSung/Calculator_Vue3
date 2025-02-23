@@ -1,6 +1,5 @@
 <script setup>
 import { computed, ref } from 'vue'
-
 import CalculatorButton from '@/components/CalculatorButton.vue'
 
 const numberData = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0']
@@ -19,89 +18,20 @@ const lastOperator = ref('') //儲存最後的 運算符
 const isResult = ref(false) // 是否點擊 等於
 const isOverflow = ref(false) // 是否超出限制
 
-// 處理使用者輸入
-const handleNumber = (num) => {
-  // 限制最大長度為 10
-  handleOverFlow()
-  if (isResult.value) {
-    handleReset()
-  }
-  state.value = 'inputNumber'
-  isResult.value = false
-  if (calNumber.value.length >= 10) return
-  calNumber.value += num
-  // 正則移除開頭多餘的 0（但允許單獨 "0"）
-  calNumber.value = calNumber.value.replace(/^(-?)0+(?=\d)/, '$1')
-  ishandleOperator.value = false
-}
-
-const handleOperator = (arithmetic) => {
-  handleOverFlow()
-  state.value = 'inputOperator'
-  isResult.value = false
-  viewOperator.value = arithmetic
-  if (ishandleOperator.value) {
-    calStore.value[calStore.value.length - 1] = arithmetic
-    return
-  }
-
-  if (state.value === 'inputEqual') {
-    // 如果是計算後的狀態，則繼續運算
-    calStore.value = [calStore.value.at(-1), arithmetic]
-  } else {
-    if (isNaN(calStore.value.at(-1))) {
-      calStore.value.push(calNumber.value)
-    }
-    calStore.value.push(arithmetic)
-  }
-
-  ishandleOperator.value = true
-  calNumber.value = '0'
-  console.log(calStore.value)
-}
-const handleEqual = () => {
-  handleOverFlow()
-  isResult.value = true
-  viewOperator.value = ''
-  switch (state.value) {
-    case 'inputNumber':
-      if (!calStore.value.length || isNaN(calStore.value.at(-1))) {
-        calStore.value.push(calNumber.value)
-      }
-      break
-
-    case 'inputOperator':
-      if (operatorData.includes(calStore.value.at(-1))) {
-        calStore.value.pop()
-      }
-      break
-
-    case 'inputEqual':
-      // 重複計算
-      console.log('哈囉')
-      if (lastOperator.value && lastOperand.value) {
-        calStore.value.push(lastOperator.value)
-        calStore.value.push(lastOperand.value)
-        console.log(calStore.value)
-      }
-      break
-  }
-  console.log(calStore.value)
-  calResult(calStore.value.join(''))
-}
 const calResult = (expression) => {
-  console.log('測試1')
+  console.log('測試1', calStore.value)
   if (/\/\s*0+(\D|$)/.test(expression)) {
     console.log('測試2')
     isOverflow.value = true
     calNumber.value = '不能除以 0'
+    return
   }
-
   const temp = new Function(`return ${expression}`)().toString()
+
   if (temp.length > 10) {
     isOverflow.value = true
     calNumber.value = '超出計算最大限制'
-    // return '超出計算最大限制'
+    return
   } else {
     state.value = 'inputEqual'
     lastOperand.value = calStore.value.at(-1)
@@ -134,6 +64,80 @@ const handleDel = () => {
     // textView.value = calCurrentNumber.value
   }
 }
+
+// 處理使用者輸入數字
+const handleNumber = (num) => {
+  // 限制最大長度為 10
+  handleOverFlow()
+  if (isResult.value) {
+    handleReset()
+  }
+  state.value = 'inputNumber'
+  isResult.value = false
+  if (calNumber.value.length >= 10) return
+  calNumber.value += num
+  // 正則移除開頭多餘的 0（但允許單獨 "0"）
+  calNumber.value = calNumber.value.replace(/^(-?)0+(?=\d)/, '$1')
+  ishandleOperator.value = false
+}
+
+//使用者輸入運算符
+const handleOperator = (arithmetic) => {
+  handleOverFlow()
+  state.value = 'inputOperator'
+  isResult.value = false
+  viewOperator.value = arithmetic
+  if (ishandleOperator.value) {
+    calStore.value[calStore.value.length - 1] = arithmetic
+    return
+  }
+
+  if (state.value === 'inputEqual') {
+    // 如果是計算後的狀態，則繼續運算
+    calStore.value = [calStore.value.at(-1), arithmetic]
+  } else {
+    if (isNaN(calStore.value.at(-1))) {
+      calStore.value.push(calNumber.value)
+    }
+    calStore.value.push(arithmetic)
+  }
+
+  ishandleOperator.value = true
+  calNumber.value = '0'
+  console.log(calStore.value)
+}
+//使用者輸入等於
+const handleEqual = () => {
+  handleOverFlow()
+  isResult.value = true
+  viewOperator.value = ''
+  switch (state.value) {
+    case 'inputNumber':
+      if (!calStore.value.length || isNaN(calStore.value.at(-1))) {
+        calStore.value.push(calNumber.value)
+      }
+      break
+
+    case 'inputOperator':
+      if (operatorData.includes(calStore.value.at(-1))) {
+        calStore.value.pop()
+      }
+      break
+
+    case 'inputEqual':
+      // 重複計算
+      console.log('哈囉')
+      if (lastOperator.value && lastOperand.value) {
+        calStore.value.push(lastOperator.value)
+        calStore.value.push(lastOperand.value)
+        console.log('重複計算', calStore.value)
+      }
+      break
+  }
+  console.log(calStore.value)
+  calResult(calStore.value.join(''))
+}
+//使用者輸入 reset or del
 const handleAction = (action) => {
   if (action === 'Reset') {
     handleReset()

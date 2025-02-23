@@ -19,9 +19,7 @@ const isResult = ref(false) // 是否點擊 等於
 const isOverflow = ref(false) // 是否超出限制
 
 const calResult = (expression) => {
-  console.log('測試1', calStore.value)
   if (/\/\s*0+(\D|$)/.test(expression)) {
-    console.log('測試2')
     isOverflow.value = true
     calNumber.value = '不能除以 0'
     return
@@ -104,7 +102,6 @@ const handleOperator = (arithmetic) => {
 
   ishandleOperator.value = true
   calNumber.value = '0'
-  console.log(calStore.value)
 }
 //使用者輸入等於
 const handleEqual = () => {
@@ -126,15 +123,12 @@ const handleEqual = () => {
 
     case 'inputEqual':
       // 重複計算
-      console.log('哈囉')
       if (lastOperator.value && lastOperand.value) {
         calStore.value.push(lastOperator.value)
         calStore.value.push(lastOperand.value)
-        console.log('重複計算', calStore.value)
       }
       break
   }
-  console.log(calStore.value)
   calResult(calStore.value.join(''))
 }
 //使用者輸入 reset or del
